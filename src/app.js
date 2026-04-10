@@ -3,6 +3,7 @@ const app = express();
 const validator = require("validator");
 const mongoose = require("mongoose");
 const User = require("./models/user");
+const { MONGODB_CONNECTION_STRING } = require("./privateKeys");
 
 app.use(express.json());
 
@@ -35,7 +36,7 @@ app.post("/signup", async (req, res) => {
 });
 
 const connectDB = async () => {
-    await mongoose.connect("mongodb+srv://balakrishnasatrapu_db_user:C3umfqJ1pUmZLEQR@cluster0.h3x6nxx.mongodb.net/devConnect");
+    await mongoose.connect(MONGODB_CONNECTION_STRING);
 }
 
 connectDB()
