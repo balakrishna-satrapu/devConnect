@@ -4,3 +4,7 @@
 
  - POST /signup
  - POST /login
+
+## profile API'S
+
+ - GET /profile/view

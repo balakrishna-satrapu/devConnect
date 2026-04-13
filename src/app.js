@@ -5,34 +5,41 @@ const mongoose = require("mongoose");
 const User = require("./models/user");
 const jwt = require("jsonwebtoken");
 const { secretKey, MONGODB_CONNECTION_STRING } = require("./privateKeys");
+const cookieParser = require("cookie-parser");
 
 app.use(express.json()); // returns middleware
+app.use(cookieParser()); // returns middleware that parse cookie in request object
 
 app.post("/signup", async (req, res) => {
     try {
-        const {firstName, lastName, emailId, password} = req.body;
-        if(firstName.length < 4 || lastName.length < 4) {
-            throw new Error("FirstName and LastName should contain atleast 4 character");
+        const allowedFields = [
+            "firstName",
+            "lastName",
+            "emailId",
+            "password",
+            "gender",
+            "age",
+            "profileImageURL",
+            "skills"
+        ];
+
+        const data = req.body;
+
+        const isAllowedUser = Object.keys(data).every((k) => allowedFields.includes(k));
+
+        if(!isAllowedUser) {
+            throw new Error("Invalid credentials");
         }
-        if(!validator.isEmail(emailId)) {
-            throw new Error("emailId is not valid");
-        }
-        if(!validator.isStrongPassword(password)) {
-            throw new Error("password should contain minimun 8 characters, 1 Uppercase letter, 1 Number and 1 special character");
-        }
+
+        const { emailId } = data;
 
         const userInDB = await User.findOne({ emailId });
         
         if(userInDB) {
-            throw new Error("user with this emailId already exist");
+            throw new Error("user with this emailId already exists");
         }
         
-        const user = new User({
-            firstName,
-            lastName,
-            emailId,
-            password
-        });
+        const user = new User(data);
 
         await user.save();
 
@@ -63,6 +70,24 @@ app.post("/login", async (req, res) => {
         res.send("Login Successful!!");
     } catch (err) {
         res.send("ERROR : " + err.message);
+    }
+});
+
+app.get("/profile/view", async (req, res) => {
+    try {
+        //user authentication
+        const { token } = req.cookies;
+        if(!token) {
+            throw new Error("invalid Token");
+        }
+        const { emailId } = jwt.verify(token, secretKey);
+        const loggedInUser = await User.findOne({ emailId });
+        if(!loggedInUser) {
+            throw new Error("User not found");
+        }
+        res.send(loggedInUser);
+    } catch(err) {
+        res.status(400).send("ERROR : " + err.message);
     }
 });
 
