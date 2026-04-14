@@ -4,7 +4,9 @@
 
  - POST /signup
  - POST /login
+ - POST /logout
 
 ## profile API'S
 
  - GET /profile/view
+ - PATCH /profile/edit
