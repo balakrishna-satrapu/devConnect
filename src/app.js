@@ -6,6 +6,7 @@ const User = require("./models/user");
 const jwt = require("jsonwebtoken");
 const { secretKey, MONGODB_CONNECTION_STRING } = require("./privateKeys");
 const cookieParser = require("cookie-parser");
+const userAuth = require("./middlewares/auth");
 
 app.use(express.json()); // returns middleware
 app.use(cookieParser()); // returns middleware that parse cookie in request object
@@ -73,22 +74,8 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.get("/profile/view", async (req, res) => {
-    try {
-        //user authentication
-        const { token } = req.cookies;
-        if(!token) {
-            throw new Error("invalid Token");
-        }
-        const { emailId } = jwt.verify(token, secretKey);
-        const loggedInUser = await User.findOne({ emailId });
-        if(!loggedInUser) {
-            throw new Error("User not found");
-        }
-        res.send(loggedInUser);
-    } catch(err) {
-        res.status(400).send("ERROR : " + err.message);
-    }
+app.get("/profile/view", userAuth, (req, res) => {
+    res.send(req.user)
 });
 
 const connectDB = async () => {
