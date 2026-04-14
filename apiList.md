@@ -10,3 +10,7 @@
 
  - GET /profile/view
  - PATCH /profile/edit
+
+## connectionRequest API'S
+
+ - POST /request/send/:status/:userId
