@@ -14,3 +14,4 @@
 ## connectionRequest API'S
 
  - POST /request/send/:status/:userId
+ - POST /request/review/:status/:requestId
