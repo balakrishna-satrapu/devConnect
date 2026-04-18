@@ -5,10 +5,12 @@ const connectDB = require("./config/database");
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
+const userRouter = require("./routes/user");
 
 app.use(express.json()); // returns middleware
 app.use(cookieParser()); // returns middleware that parse cookie in request object
 
+app.use("/user", userRouter);
 app.use("/request", requestRouter);
 app.use("/profile", profileRouter);
 app.use("/", authRouter);

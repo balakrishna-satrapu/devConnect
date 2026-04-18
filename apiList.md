@@ -15,3 +15,7 @@
 
  - POST /request/send/:status/:userId
  - POST /request/review/:status/:requestId
+
+## user API'S
+
+ - GET /user/requests

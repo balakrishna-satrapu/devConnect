@@ -15,8 +15,8 @@ requestRouter.post("/send/:status/:userId", userAuth, async (req, res) => {
             throw new Error("status not valid");
         }
 
-        if(senderUserId === receiverUserId) {
-            throw new Error("invalid request");
+        if(senderUserId.equals(receiverUserId)) {
+            throw new Error("invalid request, users cannot send requests to them");
         }
 
         const user = await User.findById(receiverUserId);
