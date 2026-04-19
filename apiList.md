@@ -19,3 +19,4 @@
 ## user API'S
 
  - GET /user/requests
+ - GET /user/connections
