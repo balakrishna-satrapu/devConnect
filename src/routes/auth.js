@@ -36,12 +36,15 @@ authRouter.post("/signup", async (req, res) => {
         
         const user = new User(data);
 
-        await user.save();
+        const userRes = await user.save();
 
         const token = jwt.sign({emailId}, secretKey);
 
-        res.cookie("token", token).send("user registered sucessfully");
+         res.cookie("token", token);
+         
+         res.send(userRes);
     } catch (err) {
+        console.log(err.message);
         res.status(400).send("Error : " + err.message);
     }
 });
@@ -61,10 +64,20 @@ authRouter.post("/login", async (req, res) => {
 
         const token = jwt.sign({emailId}, secretKey);
 
+        const { firstName, lastName, age, gender, skills, about, profileImageURL } = user;
+        
         res.cookie("token", token);
-        res.send("Login Successful!!");
+        res.send({
+            firstName,
+            lastName,
+            age,
+            gender,
+            skills,
+            about,
+            profileImageURL
+        });
     } catch (err) {
-        res.send("ERROR : " + err.message);
+        res.status(400).json({message: err.message});
     }
 });
 

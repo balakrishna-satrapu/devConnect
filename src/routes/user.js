@@ -11,7 +11,7 @@ userRouter.get("/requests", userAuth, async (req, res) => {
         const pendingRequests = await ConnectionRequest.find({
             receiverUserId: loggedInUser._id,
             status: "interested"
-        }).populate("senderUserId", ["firstName", "lastName"]);
+        }).populate("senderUserId", ["firstName", "lastName", "age", "profileImageURL", "gender", "skills", "about"]);
 
         res.send(pendingRequests);
     } catch (err) {
@@ -29,8 +29,8 @@ userRouter.get("/connections", userAuth, async (req, res) => {
                 {receiverUserId: loggedInUser._id, status: "accepted"}
             ]
         })
-        .populate("senderUserId", "firstName lastName")
-        .populate("receiverUserId", "firstName lastName");
+        .populate("senderUserId", ["firstName", "lastName", "age", "profileImageURL", "gender", "skills", "about"])
+        .populate("receiverUserId", ["firstName", "lastName", "age", "profileImageURL", "gender", "skills", "about"]);
 
         const connections = acceptedConnections.map(connection => {
             if(connection.receiverUserId._id.equals(loggedInUser._id)) {
@@ -38,8 +38,9 @@ userRouter.get("/connections", userAuth, async (req, res) => {
             }
             return connection.receiverUserId;
         });
-
-        res.send(connections);
+        
+        const connectionsWithoutNULL = connections.filter(connection => connection);
+        res.send(connectionsWithoutNULL);
     } catch(err) {
         res.status(400).send("ERROR: " + err.message);
     }
@@ -71,7 +72,7 @@ userRouter.get("/feed", userAuth, async (req, res) => {
 
         const usersToShow = await User.find({
             _id: {$nin: hideUsersFromFeed}
-        }).select("firstName lastName profileImageURL skills").skip((page-1)*limit).limit(limit);
+        }).select("firstName lastName age gender about profileImageURL skills").skip((page-1)*limit).limit(limit);
 
         res.send(usersToShow);
     } catch (err) {

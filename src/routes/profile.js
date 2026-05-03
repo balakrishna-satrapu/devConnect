@@ -18,7 +18,7 @@ profileRouter.patch("/edit", userAuth, async(req, res) => {
             "gender",
             "age",
             "profileImageURL",
-            "skills"
+            "about"
         ];
 
         const isAllowedEdit = Object.keys(data).every( k => allowedFields.includes(k));
