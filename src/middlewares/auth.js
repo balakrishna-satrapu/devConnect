@@ -1,6 +1,5 @@
 const User = require("../models/user.js");
 const jwt = require("jsonwebtoken");
-const { secretKey } = require("../privateKeys");
 
 const userAuth = async (req, res, next) => {
     //user authentication
@@ -9,7 +8,7 @@ const userAuth = async (req, res, next) => {
         if(!token) {
             throw new Error("invalid Token");
         }
-        const { emailId } = jwt.verify(token, secretKey);
+        const { emailId } = jwt.verify(token, process.env.SECRET_KEY);
         const loggedInUser = await User.findOne({ emailId });
         if(!loggedInUser) {
             throw new Error("User not found");

@@ -3,7 +3,6 @@ const authRouter = express.Router();
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
-const { secretKey } = require("../privateKeys");
 
 authRouter.post("/signup", async (req, res) => {
     try {
@@ -38,7 +37,7 @@ authRouter.post("/signup", async (req, res) => {
 
         const userRes = await user.save();
 
-        const token = jwt.sign({emailId}, secretKey);
+        const token = jwt.sign({emailId}, process.env.SECRET_KEY);
 
          res.cookie("token", token);
          
@@ -62,7 +61,7 @@ authRouter.post("/login", async (req, res) => {
             throw new Error("invalid credentials");
         }
 
-        const token = jwt.sign({emailId}, secretKey);
+        const token = jwt.sign({emailId}, process.env.SECRET_KEY);
 
         const { firstName, lastName, age, gender, skills, about, profileImageURL } = user;
         
