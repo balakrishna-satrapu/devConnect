@@ -39,7 +39,11 @@ authRouter.post("/signup", async (req, res) => {
 
         const token = jwt.sign({emailId}, process.env.JWT_SECRET);
 
-         res.cookie("token", token);
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+        });
          
          res.send(userRes);
     } catch (err) {
@@ -65,7 +69,12 @@ authRouter.post("/login", async (req, res) => {
 
         const { firstName, lastName, age, gender, skills, about, profileImageURL } = user;
         
-        res.cookie("token", token);
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+        });
+
         res.send({
             firstName,
             lastName,
@@ -83,6 +92,9 @@ authRouter.post("/login", async (req, res) => {
 authRouter.post("/logout", (req, res) => {
     res.cookie("token", null, {
         expires: new Date(Date.now()),
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
     });
     res.send("Logout Successful!!!");
 });
