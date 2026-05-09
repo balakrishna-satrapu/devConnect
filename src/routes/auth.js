@@ -37,7 +37,7 @@ authRouter.post("/signup", async (req, res) => {
 
         const userRes = await user.save();
 
-        const token = jwt.sign({emailId}, process.env.SECRET_KEY);
+        const token = jwt.sign({emailId}, process.env.JWT_SECRET);
 
          res.cookie("token", token);
          
@@ -61,7 +61,7 @@ authRouter.post("/login", async (req, res) => {
             throw new Error("invalid credentials");
         }
 
-        const token = jwt.sign({emailId}, process.env.SECRET_KEY);
+        const token = jwt.sign({emailId}, process.env.JWT_SECRET);
 
         const { firstName, lastName, age, gender, skills, about, profileImageURL } = user;
         
