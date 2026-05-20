@@ -10,6 +10,7 @@
 
  - GET /profile/view
  - PATCH /profile/edit
+ - PATCH /profile/changePassword
 
 ## connectionRequest API'S
 

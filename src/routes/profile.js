@@ -2,6 +2,7 @@ const express = require("express");
 const profileRouter = express.Router();
 const userAuth = require("../middlewares/auth");
 const User = require("../models/user");
+const validator = require("validator");
 
 profileRouter.get("/view", userAuth, (req, res) => {
     res.send(req.user)
@@ -37,6 +38,42 @@ profileRouter.patch("/edit", userAuth, async(req, res) => {
 
     } catch (err) {
         res.status(400).send("ERROR: " + err.message);
+    }
+});
+
+profileRouter.patch("/changePassword", userAuth, async(req, res) => {
+    try {
+        const {oldPassword, newPassword} = req.body;
+        console.log(oldPassword);
+        console.log(newPassword);
+        const loggedInUser = req.user;
+        console.log(loggedInUser);
+        if(oldPassword !== loggedInUser.password) {
+            throw new Error("old Password is incorrect");
+        }
+
+        // check new password
+
+        if(oldPassword === newPassword) {
+            throw new Error("oldPassword and newPassword are same");
+        }
+
+        if(!validator.isStrongPassword(newPassword)) {
+            throw new Error("password should contain minimum 8 characters, 1 Uppercase letter, 1 Number and 1 special character");
+        }
+
+        const updatedProfile = await User.findOneAndUpdate({ _id: loggedInUser._id }, { password: newPassword}, { new: true });
+
+        res.json(
+            { 
+                "message": "password changed Succesfully !!!",
+                "data": updatedProfile 
+            }
+        );
+
+    } catch (err) {
+        console.log(err.message);
+        res.status(400).send(err);
     }
 });
 
