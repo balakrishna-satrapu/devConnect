@@ -2,6 +2,7 @@ const express = require("express");
 const profileRouter = express.Router();
 const userAuth = require("../middlewares/auth");
 const User = require("../models/user");
+const ConnectionRequest = require("../models/connectionRequest");
 const validator = require("validator");
 
 profileRouter.get("/view", userAuth, (req, res) => {
@@ -75,6 +76,38 @@ profileRouter.patch("/changePassword", userAuth, async(req, res) => {
         console.log(err.message);
         res.status(400).send(err);
     }
+});
+
+profileRouter.delete("/delete", userAuth, async(req, res) => {
+    try {
+        const loggedInUser = req.user;
+        const { password } = req.body;
+
+        if(loggedInUser.password !== password) {
+            throw new Error("invalid password");
+        }
+
+        await User.findOneAndDelete({emailId: loggedInUser.emailId});
+        
+        await ConnectionRequest.deleteMany({
+            $or: [
+                {senderUserId: loggedInUser._id},
+                {receiverUserId: loggedInUser._id}
+            ]
+        });
+
+        res.cookie("token", null, {
+            expires: new Date(Date.now()),
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+        });
+        
+        res.send("Account Deleted Permanently");
+    } catch(err) {
+        res.status(400).send("ERROR : " + err.message);
+    }
+    
 });
 
 module.exports = profileRouter;

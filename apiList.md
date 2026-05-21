@@ -11,6 +11,7 @@
  - GET /profile/view
  - PATCH /profile/edit
  - PATCH /profile/changePassword
+ - DELETE /profile/delete
 
 ## connectionRequest API'S
 
