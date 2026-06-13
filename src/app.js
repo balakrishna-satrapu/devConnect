@@ -7,7 +7,11 @@ const connectDB = require("./config/database");
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
+const chatRouter = require("./routes/chat");
 const userRouter = require("./routes/user");
+const http = require("http");
+const { createServer } = http;
+const initializeSocket = require("./utils/socket");
 
 app.use(cors(
     {
@@ -23,13 +27,18 @@ app.use(cookieParser()); // returns middleware that parse cookie in request obje
 
 app.use("/user", userRouter);
 app.use("/request", requestRouter);
+app.use("/", chatRouter);
 app.use("/profile", profileRouter);
 app.use("/", authRouter);
+
+const server = createServer(app);
+
+initializeSocket(server);
 
 connectDB()
     .then(() => {
         console.log("Database connected successfully!!!");
-        app.listen(process.env.PORT, () => {
+        server.listen(process.env.PORT, () => {
             console.log("The app is started listening to requests on port " + process.env.PORT);
         });
     })

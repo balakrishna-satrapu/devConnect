@@ -67,7 +67,7 @@ authRouter.post("/login", async (req, res) => {
 
         const token = jwt.sign({emailId}, process.env.JWT_SECRET);
 
-        const { firstName, lastName, age, gender, skills, about, profileImageURL } = user;
+        const {_id, firstName, lastName, age, gender, skills, about, profileImageURL } = user;
         
         res.cookie("token", token, {
             httpOnly: true,
@@ -77,6 +77,7 @@ authRouter.post("/login", async (req, res) => {
 
         res.send({
             firstName,
+            _id,
             lastName,
             age,
             gender,
